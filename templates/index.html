@@ -18,7 +18,7 @@
             <a href="{{url_for("click_page", user=current_user.id)}}"><div class="pushbutton wiggle">click me</div></a>
             <p>You have not clicked the button today.</p>
         {% endif %}
-        <p>You have clicked the button {{score.score + has_clicked}} day(s) in a row.</p>
+        <p>You have clicked the button {{score.score}} day(s) in a row.</p>
         {% if score.lost %}
             <p>You have lost the game permanently by missing a day.</p>
         {% endif %}
