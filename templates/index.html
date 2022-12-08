@@ -1,0 +1,39 @@
+{% extends 'base2.html' %}
+
+{% block header %}
+    <p><i><b>{{ project_name }}</b></i>: {{ description }} {{ instructions | safe }}</p>
+{% endblock %}
+
+{% block content %}
+    {% if current_user.is_authenticated %}
+        {% if has_clicked %}
+            {% if click.clicks < 5 %}
+            <a href="{{url_for("click_page", user=current_user.id)}}"><div class="pushbutton">don't click</div></a>
+            <p>You have clicked the button already today.</p>
+            {% else %}
+            <a href="{{url_for("click_page", user=current_user.id)}}"><div class="pushbutton">ok, stop</div></a>
+            <p>You have clicked the button {{click.clicks}} times today.</p>
+            {% endif %}
+        {% else %}
+            <a href="{{url_for("click_page", user=current_user.id)}}"><div class="pushbutton wiggle">click me</div></a>
+            <p>You have not clicked the button today.</p>
+        {% endif %}
+        <p>You have clicked the button {{score.score + has_clicked}} day(s) in a row.</p>
+        {% if score.lost %}
+            <p>You have lost the game permanently by missing a day.</p>
+        {% endif %}
+    {% else %}
+        <a href="{{url_for("login")}}"><div class="pushbutton wiggle">click me</div></a>
+        <p>Click the button to make an account.</p>
+    {% endif %}
+
+    <ol>
+    {% for user,score in scores %}
+        {% if score.lost %}
+            <li><b>{{ user }}</b> clicked {{score.score}} days in a row before losing</li>
+        {% else %}
+            <li><b>{{ user }}</b> clicked {{score.score}} days in a row so far</li>
+        {% endif %}
+    {% endfor %}
+    </ol>
+{% endblock %}

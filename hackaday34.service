@@ -1,0 +1,11 @@
+[Unit]
+Description=gunicorn3 for hackaday-34-uptime
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/hackaday/day34_uptime
+ExecStart=/bin/gunicorn3 -e SCRIPT_NAME=/hackaday/uptime --bind 0.0.0.0:8034 app:app
+
+[Install]
+WantedBy=multi-user.target
