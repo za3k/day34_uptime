@@ -23,7 +23,7 @@ load_info({
 clicks = DBDict("click")
 scores = DBDict("score")
 
-def last_click():
+def last_midnight():
     return clicks.get('server_last_check', datetime(2000,1,2))
 
 @app.route("/")
@@ -33,7 +33,7 @@ def index():
     if current_user.is_authenticated:
         click = clicks.get(current_user.id)
         score = scores.get(current_user.id, {"score": 0, "lost": False})
-        if click: has_clicked = click["last_click"] > last_click()
+        if click: has_clicked = click["last_click"] > last_midnight()
     
     return render_template('index.html', has_clicked=has_clicked, score=score, click=click, scores=sorted(scores.items(), key=lambda x: x[1]["score"], reverse=True))
 
@@ -43,9 +43,8 @@ def click_page(user):
 
     click = clicks.get(user, { "clicks": 0, "last_click": datetime(2000,1,1) })
     score = scores.get(user, { "score": 0 , "lost": False })
-    lc = last_click()
+    lc = last_midnight()
 
-    print(user, click, score)
     if click["last_click"] < lc and not score["lost"]:
         score["score"] += 1
         scores[user] = score
@@ -57,13 +56,13 @@ def click_page(user):
 
 @app.route("/update")
 def update_page():
-    if last_click() + timedelta(days=1) < datetime.now():
+    if last_midnight() + timedelta(days=1) < datetime.utcnow():
         update()
         return "updated"
     return "no update"
 
 def update():
-    lc = last_click()
+    lc = last_midnight()
     for user in DBDict("users"):
         click = clicks.get(user)
         score = scores.get(user, { "score": 0, "lost": False })
@@ -75,4 +74,4 @@ def update():
             click["clicks"]=0
         clicks[user] = click
         scores[user] = score
-    clicks['server_last_check'] = datetime.now()
+    clicks['server_last_check'] = datetime.combine(datetime.utcnow().date(), datetime.min.time());
