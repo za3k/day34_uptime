@@ -74,7 +74,7 @@ def login():
     if not user: # Hack-a-day! Combine registration and login
         user = User.register(username, password)
     if user:
-        flask_login.login_user(user)
+        flask_login.login_user(user, remember=True)
         then = flask.request.form.get('redirect', flask.url_for("index"))
         # Hack-a-day! No safety here.
         #if not is_safe_url(then):
