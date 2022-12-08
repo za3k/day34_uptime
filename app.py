@@ -24,7 +24,9 @@ clicks = DBDict("click")
 scores = DBDict("score")
 
 def last_midnight():
-    return clicks.get('server_last_check', datetime(2000,1,2))
+    last = clicks.get('server_last_check', datetime(2000,1,2))
+    midnight = datetime.combine(last.date(), datetime.min.time()) # Correct for existing error in DB
+    return midnight
 
 @app.route("/")
 def index():
